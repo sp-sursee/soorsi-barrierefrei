@@ -1,0 +1,33 @@
+#!/usr/bin/env bash
+# End-to-end check of the built site: links/images/alt texts via html-proofer,
+# plus assertions that the CMS-managed event data reaches the rendered page.
+# Usage: [BASE_PATH=/repo] script/test [site-dir]   (expects a prior `bundle exec jekyll build`)
+set -euo pipefail
+export LANG="${LANG:-C.UTF-8}" LC_ALL="${LC_ALL:-C.UTF-8}"
+
+site="${1:-_site}"
+index="$site/index.html"
+
+# BASE_PATH: the baseurl the site was built with (GitHub project pages), so
+# html-proofer can resolve /<repo>/... links against the site root.
+proofer_args=(--disable-external)
+if [ -n "${BASE_PATH:-}" ]; then proofer_args+=(--swap-urls "^${BASE_PATH}:"); fi
+bundle exec htmlproofer "$site" "${proofer_args[@]}"
+
+fail=0
+expect() {
+    if grep -qF -- "$1" "$index"; then echo "ok       $1"; else echo "MISSING  $1"; fail=1; fi
+}
+
+email=$(ruby -ryaml -e 'puts YAML.load_file("_data/site.yml").fetch("email")')
+date_line=$(ruby -ryaml -e 'puts YAML.load_file("index.html").dig("hero", "date_line")')
+
+expect 'lang="de-CH"'
+expect 'href="#inhalt"'
+expect "mailto:$email"
+expect "$date_line"
+
+h1_count=$(grep -o "<h1" "$index" | wc -l | tr -d ' ')
+if [ "$h1_count" != "1" ]; then echo "expected exactly one <h1>, found $h1_count"; fail=1; fi
+
+exit "$fail"

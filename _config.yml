@@ -1,0 +1,29 @@
+title: Soorsi Barrierefrei
+lang: de-CH
+
+# NOTE: The editable site texts (title, description, email, banner) live in
+# _data/site.yml, which is what the Pages CMS writes to. Keep them there, NOT
+# here: the CMS rewrites the file it manages with only the fields it knows about,
+# so anything extra in that file gets silently dropped. This file is intentionally
+# NOT managed by the CMS, so the structural config below is safe from that.
+#
+# baseurl is set by the GitHub Pages workflow (--baseurl), so all internal links
+# must go through the relative_url filter.
+
+exclude:
+  - "fllyer_barrierefrei_v5 Ordner"
+  - "flyer_barrierefrei_v5 Ordner.zip"
+  - README.md
+  - Gemfile
+  - Gemfile.lock
+  - vendor
+  - .claude
+  - script
+
+# Layouts are assigned here (not in each page's front matter) so the Pages CMS,
+# which only writes back the fields it knows about, can never strip a page's layout.
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default

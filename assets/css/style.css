@@ -1,0 +1,340 @@
+/* ============================================================
+   Soorsi Barrierefrei - design based on the event flyer
+   All text/background pairs are chosen for WCAG 2.1 AA contrast.
+   ============================================================ */
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserrat-latin.woff") format("woff");
+    font-weight: 100 900;
+    font-style: normal;
+    font-display: swap;
+}
+
+@font-face {
+    font-family: "Montserrat";
+    src: url("../fonts/montserrat-Italic-latin.woff") format("woff");
+    font-weight: 100 900;
+    font-style: italic;
+    font-display: swap;
+}
+
+:root {
+    /* hero band ends in the exact top colour of the group photo */
+    --orange-dark: #a63e17;
+    --orange: #ba4e21;
+    --peach: #f6d9c7;
+    --peach-light: #fcf1ea;
+    --red: #ed1c24;
+    --brown: #3d160d;
+    --brown-muted: #6a3324;
+    --white: #ffffff;
+    --line: rgba(61, 22, 13, .35);
+    --focus: #1a1a1a;
+    --radius: 14px;
+    --max: 1180px;
+    --narrow: 760px;
+}
+
+* { box-sizing: border-box; }
+
+html {
+    font-family: "Montserrat", system-ui, sans-serif;
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+    html { scroll-behavior: smooth; }
+}
+
+body {
+    margin: 0;
+    background: var(--peach-light);
+    color: var(--brown);
+    font-size: 1.125rem;
+    line-height: 1.65;
+}
+
+h1, h2, h3 {
+    line-height: 1.15;
+    margin: 0 0 .6em;
+    color: var(--brown);
+}
+
+h2 { font-size: clamp(1.6rem, 3.4vw, 2.4rem); font-weight: 800; }
+h3 { font-size: 1.25rem; font-weight: 700; }
+
+p { margin: 0 0 1em; }
+p:last-child { margin-bottom: 0; }
+
+a { color: var(--orange-dark); text-underline-offset: .18em; text-decoration-thickness: .08em; }
+a:hover { color: var(--brown); }
+
+img { max-width: 100%; display: block; }
+
+address { font-style: normal; margin-bottom: 1.5em; font-size: 1.25rem; }
+
+:focus-visible {
+    outline: 3px solid var(--focus);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 6px var(--white);
+}
+
+main:focus { outline: none; }
+
+.wrap {
+    width: 100%;
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 1.25rem;
+}
+
+.wrap.narrow { max-width: var(--narrow); }
+
+.skip-link {
+    position: absolute;
+    left: 1rem;
+    top: -10rem;
+    z-index: 100;
+    padding: .75rem 1.25rem;
+    background: var(--white);
+    color: var(--brown);
+    font-weight: 700;
+    border-radius: 8px;
+}
+
+.skip-link:focus { top: 1rem; }
+
+.icon { width: 1.5em; height: 1.5em; flex: none; }
+
+
+/* ---------- buttons ---------- */
+.button {
+    display: inline-flex;
+    align-items: center;
+    gap: .6rem;
+    min-height: 3rem;
+    padding: .8rem 1.5rem;
+    border: 2px solid var(--orange-dark);
+    border-radius: 999px;
+    background: var(--orange-dark);
+    color: var(--white);
+    font-weight: 700;
+    font-size: 1.125rem;
+    text-decoration: none;
+    transition: background-color .2s, color .2s;
+}
+
+.button:hover { background: var(--brown); border-color: var(--brown); color: var(--white); }
+
+.button-secondary { background: transparent; color: var(--orange-dark); }
+.button-secondary:hover { background: var(--orange-dark); border-color: var(--orange-dark); color: var(--white); }
+
+@media (prefers-reduced-motion: reduce) {
+    .button { transition: none; }
+}
+
+
+/* ---------- banner ---------- */
+.banner { background: var(--brown); color: var(--white); }
+.banner[hidden] { display: none; }
+
+.banner-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding-top: .75rem;
+    padding-bottom: .75rem;
+}
+
+.banner-inner p { margin: 0; font-weight: 600; }
+
+.banner-close {
+    display: inline-flex;
+    padding: .4rem;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--white);
+    cursor: pointer;
+}
+
+.banner-close:focus-visible { outline-color: var(--white); box-shadow: none; }
+
+
+/* ---------- hero ---------- */
+.hero { background: var(--orange); }
+
+.hero-text {
+    background: linear-gradient(180deg, var(--orange-dark) 0%, var(--orange) 100%);
+    color: var(--white);
+    padding: 2rem 0 1.5rem;
+}
+
+.hero-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 2px dotted rgba(255, 255, 255, .7);
+}
+
+.hero-logo {
+    width: clamp(160px, 22vw, 248px);
+    height: auto;
+    /* the logo is dark on transparent; a light chip keeps it legible on orange */
+    background: var(--white);
+    padding: .6rem .9rem;
+    border-radius: 10px;
+}
+
+.hero-date {
+    margin: 0;
+    font-size: clamp(1.4rem, 3.6vw, 2.75rem);
+    font-weight: 300;
+    line-height: 1.2;
+}
+
+.hero-heading {
+    margin: 0;
+    padding: 1.25rem 0;
+    color: var(--white);
+    font-size: clamp(2rem, 6vw, 4.25rem);
+    line-height: 1.05;
+}
+
+.hero-name {
+    display: inline;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: -.01em;
+}
+
+.hero-tagline {
+    display: inline-block;
+    font-weight: 300;
+}
+
+.hero-media { position: relative; }
+
+/* the image is cropped from the top, so fade the band colour over its upper
+   edge to hide the seam between band and photo */
+.hero-media::before {
+    content: "";
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: 35%;
+    background: linear-gradient(180deg, var(--orange) 0%, rgba(186, 78, 33, 0) 100%);
+    pointer-events: none;
+}
+
+.hero-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 8;
+    object-fit: cover;
+}
+
+@media (max-width: 700px) {
+    .hero-tagline { display: block; margin-left: 0; margin-top: .2em; }
+    .hero-image { aspect-ratio: 4 / 3; }
+}
+
+
+/* ---------- sections ---------- */
+.block { padding: clamp(3rem, 7vw, 5.5rem) 0; }
+
+.intro { background: var(--peach); }
+
+.intro-heading {
+    text-transform: uppercase;
+    font-size: clamp(1.4rem, 3vw, 2rem);
+    padding-bottom: .9rem;
+    border-bottom: 2px dotted var(--line);
+}
+
+.intro-text { font-size: clamp(1.15rem, 2vw, 1.4rem); }
+
+.details h2 { text-align: center; margin-bottom: 1.5em; }
+
+.detail-grid {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+}
+
+@media (min-width: 560px) { .detail-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 1100px) { .detail-grid { grid-template-columns: repeat(4, 1fr); } }
+
+.detail-card {
+    background: var(--white);
+    border-radius: var(--radius);
+    padding: 1.75rem 1.5rem;
+    box-shadow: 0 6px 24px rgba(61, 22, 13, .08);
+}
+
+.detail-card p { margin-bottom: .2em; }
+
+.detail-icon {
+    display: inline-flex;
+    color: var(--red);
+    font-size: 1.6rem;
+    margin-bottom: .6rem;
+}
+
+.registration {
+    background: var(--peach);
+    text-align: center;
+}
+
+.registration-actions { margin: 2rem 0 1rem; }
+
+.registration-address { color: var(--brown-muted); }
+
+.location { text-align: center; }
+
+.extra:nth-of-type(odd) { background: var(--peach); }
+
+
+/* ---------- 404 header ---------- */
+.page-header { background: var(--orange-dark); padding: 1.5rem 0; }
+.header-logo { display: inline-block; }
+.header-logo img { width: 200px; height: auto; background: var(--white); padding: .6rem .9rem; border-radius: 10px; }
+
+
+/* ---------- footer ---------- */
+.site-footer {
+    background: var(--brown);
+    color: var(--white);
+    padding: 3rem 0 1.5rem;
+}
+
+.site-footer a { color: var(--white); }
+.site-footer :focus-visible { outline-color: var(--white); box-shadow: none; }
+
+.foot-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: flex-start;
+    gap: 2rem;
+}
+
+.foot-logo { display: inline-block; }
+.foot-logo img { width: 200px; height: auto; background: var(--white); padding: .6rem .9rem; border-radius: 10px; }
+
+.foot-heading { color: var(--white); font-size: 1.125rem; margin-bottom: .4em; }
+
+.foot-bottom {
+    margin-top: 2.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid rgba(255, 255, 255, .3);
+    font-size: .95rem;
+}

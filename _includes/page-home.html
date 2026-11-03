@@ -1,0 +1,84 @@
+{%- assign hero = page.hero -%}
+<header class="hero">
+    <div class="hero-text">
+        <div class="wrap">
+            <div class="hero-top">
+                <img class="hero-logo" src="{{ '/assets/logo.svg' | relative_url }}" alt="{{ site.data.site.title }}" width="248" height="90">
+                {% if hero.date_line %}<p class="hero-date">{{ hero.date_line }}</p>{% endif %}
+            </div>
+            <h1 class="hero-heading">
+                <span class="hero-name">{{ hero.heading }}</span>
+                {% if hero.tagline %}<span class="hero-tagline">{{ hero.tagline }}</span>{% endif %}
+            </h1>
+        </div>
+    </div>
+    {% if hero.image %}
+    <div class="hero-media">
+        <img class="hero-image" src="{{ hero.image | relative_url }}" alt="{{ hero.image_alt | escape }}" style="object-position: center {{ hero.image_position | default: 'bottom' }};" width="2400" height="1374">
+    </div>
+    {% endif %}
+</header>
+
+<main id="inhalt" tabindex="-1">
+    {% if page.intro.heading or page.intro.text %}
+    <section class="block intro" aria-labelledby="intro-heading">
+        <div class="wrap narrow">
+            <h2 id="intro-heading" class="intro-heading">{{ page.intro.heading }}</h2>
+            <div class="intro-text">{{ page.intro.text | markdownify }}</div>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if page.details.size > 0 %}
+    <section class="block details" aria-labelledby="details-heading">
+        <div class="wrap">
+            <h2 id="details-heading">{{ page.details_heading }}</h2>
+            <ul class="detail-grid" role="list">
+                {% for item in page.details %}
+                <li class="detail-card">
+                    {% if item.icon %}<span class="detail-icon">{% include icon.html name=item.icon %}</span>{% endif %}
+                    <h3>{{ item.title }}</h3>
+                    {{ item.text | markdownify }}
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if page.registration.heading %}
+    {%- assign subject = page.registration.email_subject | url_encode | replace: "+", "%20" -%}
+    <section class="block registration" id="anmeldung" aria-labelledby="registration-heading">
+        <div class="wrap narrow">
+            <h2 id="registration-heading">{{ page.registration.heading }}</h2>
+            {{ page.registration.text | markdownify }}
+            <p class="registration-actions">
+                <a class="button" href="mailto:{{ site.data.site.email }}{% if subject != "" %}?subject={{ subject }}{% endif %}">{% include icon.html name="mail" %}{{ page.registration.button_label | default: "Anmelden" }}</a>
+            </p>
+            <p class="registration-address">E-Mail: <a href="mailto:{{ site.data.site.email }}">{{ site.data.site.email }}</a></p>
+        </div>
+    </section>
+    {% endif %}
+
+    {% if page.location.heading %}
+    <section class="block location" aria-labelledby="location-heading">
+        <div class="wrap narrow">
+            <h2 id="location-heading">{{ page.location.heading }}</h2>
+            <address>{{ page.location.address | newline_to_br }}</address>
+            {% if page.location.maps_url and page.location.maps_url != "" %}
+            <p><a class="button button-secondary" href="{{ page.location.maps_url }}">{% include icon.html name="ort" %}{{ page.location.maps_label | default: "Auf der Karte anzeigen" }}</a></p>
+            {% endif %}
+        </div>
+    </section>
+    {% endif %}
+
+    {% for section in page.sections %}
+    <section class="block extra">
+        <div class="wrap narrow">
+            <h2>{{ section.heading }}</h2>
+            {{ section.text | markdownify }}
+            {% if section.button_label and section.button_label != "" %}<p><a class="button" href="{{ section.button_url }}">{{ section.button_label }}</a></p>{% endif %}
+        </div>
+    </section>
+    {% endfor %}
+</main>

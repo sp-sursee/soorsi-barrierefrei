@@ -1,0 +1,89 @@
+name: Deploy
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+
+    - uses: ruby/setup-ruby@v1
+      with:
+        ruby-version: "3.4"
+        bundler-cache: true
+
+    - id: pages
+      uses: actions/configure-pages@v5
+
+    - name: Build
+      run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+      env:
+        JEKYLL_ENV: production
+
+    - name: Compress site images
+      run: |
+        set -euo pipefail
+        sudo apt-get update -qq
+        sudo apt-get install -y -qq --no-install-recommends \
+          imagemagick jpegoptim pngquant optipng
+
+        MAX_EDGE=2560
+        JPEG_QUALITY=82
+
+        before=$(du -sk _site | cut -f1)
+
+        find _site -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) -print0 |
+          while IFS= read -r -d '' f; do
+            mogrify -resize "${MAX_EDGE}x${MAX_EDGE}>" -strip "$f"
+          done
+
+        find _site -type f \( -iname '*.jpg' -o -iname '*.jpeg' \) -print0 |
+          xargs -0 --no-run-if-empty \
+            jpegoptim --quiet --strip-all --all-progressive --max="$JPEG_QUALITY"
+
+        find _site -type f -iname '*.png' -print0 |
+          while IFS= read -r -d '' f; do
+            pngquant --quality=70-95 --skip-if-larger --strip --force --output "$f" -- "$f" || true
+          done
+
+        # -fix: pngquant can emit a palette PNG whose tRNS chunk has more alpha
+        # entries than optipng's strict parser accepts ("Too many alpha values
+        # in tRNS"). optipng treats that as a recoverable error and otherwise
+        # aborts without writing output, which fails the whole xargs batch.
+        find _site -type f -iname '*.png' -print0 |
+          xargs -0 --no-run-if-empty optipng -quiet -o2 -strip all -fix
+
+        after=$(du -sk _site | cut -f1)
+        echo "_site: $((before / 1024)) MB -> $((after / 1024)) MB (saved $(( (before - after) * 100 / before ))%)"
+
+    - name: Test (links, images, alt texts, event data)
+      run: script/test
+      env:
+        BASE_PATH: ${{ steps.pages.outputs.base_path }}
+
+    - uses: actions/upload-pages-artifact@v3
+      with:
+        path: _site
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+    - id: deployment
+      uses: actions/deploy-pages@v4

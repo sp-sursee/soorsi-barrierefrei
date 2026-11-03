@@ -1,0 +1,10 @@
+<footer class="site-footer">
+    <div class="wrap foot-grid">
+        <a href="{{ '/' | relative_url }}" class="foot-logo"><img src="{{ '/assets/logo.svg' | relative_url }}" alt="{{ site.data.site.title }}, zur Startseite" width="248" height="90"></a>
+        <div>
+            <h2 class="foot-heading">Kontakt</h2>
+            <p><a href="mailto:{{ site.data.site.email }}">{{ site.data.site.email }}</a></p>
+        </div>
+    </div>
+    <div class="wrap foot-bottom">© {{ site.time | date: "%Y" }} {{ site.data.site.title }}</div>
+</footer>

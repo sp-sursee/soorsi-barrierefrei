@@ -1,0 +1,14 @@
+{% if site.data.site.banner and site.data.site.banner != "" %}
+<div class="banner" id="banner" role="region" aria-label="Hinweis">
+    <div class="wrap banner-inner">
+        <p>{{ site.data.site.banner }}</p>
+        <button type="button" class="banner-close" id="banner-close" aria-label="Hinweis schliessen">{% include icon.html name="schliessen" %}</button>
+    </div>
+</div>
+<script>
+    (function () {
+        var banner = document.getElementById("banner");
+        document.getElementById("banner-close").addEventListener("click", function () { banner.hidden = true; });
+    })();
+</script>
+{% endif %}

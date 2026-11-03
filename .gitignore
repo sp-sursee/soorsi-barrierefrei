@@ -1,0 +1,9 @@
+_site
+.sass-cache
+.jekyll-cache
+.jekyll-metadata
+.bundle
+vendor
+.DS_Store
+fllyer_barrierefrei_v5 Ordner/
+flyer_barrierefrei_v5 Ordner.zip

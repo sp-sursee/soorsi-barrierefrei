@@ -1,0 +1,94 @@
+media:
+  input: assets/images
+  output: /assets/images
+
+content:
+  - name: config
+    label: Konfiguration
+    path: _data/site.yml
+    type: file
+    format: yaml
+    fields:
+      - { name: title, label: Website-Titel, type: string }
+      - { name: description, label: Website-Beschreibung, type: text, description: "Wird von Suchmaschinen und beim Teilen von Links angezeigt." }
+      - { name: email, label: E-Mail für Anmeldungen, type: string }
+      - name: banner
+        label: Banner-Hinweis
+        type: string
+        description: Hinweistext für das Banner oben auf der Website (z.B. Anmeldeschluss oder Programmänderung). Leer lassen, um das Banner auszublenden.
+
+  - name: home
+    label: Startseite
+    path: index.html
+    type: file
+    format: yaml-frontmatter
+    fields:
+      - name: hero
+        label: Titelbereich
+        type: object
+        fields:
+          - { name: date_line, label: Datum und Zeit, type: string, description: "z.B. 17. April 2027, 10:00 bis 14:00 Uhr" }
+          - { name: heading, label: Titel, type: string }
+          - { name: tagline, label: Slogan, type: string }
+          - { name: image, label: Titelbild, type: image }
+          - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text, description: "Beschreibt das Bild für Menschen, die es nicht sehen können. Bitte immer ausfüllen." }
+          - { name: image_position, label: Bildausrichtung, type: string, description: "Welcher Teil des Bildes sichtbar bleibt: top, center oder bottom" }
+      - name: intro
+        label: Einleitung
+        type: object
+        fields:
+          - { name: heading, label: Titel, type: string }
+          - { name: text, label: Text, type: rich-text }
+      - { name: details_heading, label: Titel Infoboxen, type: string }
+      - name: details
+        label: Infoboxen
+        type: object
+        list: true
+        fields:
+          - name: icon
+            label: Symbol
+            type: select
+            options:
+              values:
+                - { value: kalender, label: Kalender }
+                - { value: uhr, label: Uhr }
+                - { value: ort, label: Ort }
+                - { value: essen, label: Essen }
+                - { value: mail, label: E-Mail }
+                - { value: info, label: Information }
+          - { name: title, label: Titel, type: string }
+          - { name: text, label: Text, type: rich-text }
+      - name: registration
+        label: Anmeldung
+        type: object
+        fields:
+          - { name: heading, label: Titel, type: string }
+          - { name: text, label: Text, type: rich-text }
+          - { name: button_label, label: Button-Beschriftung, type: string }
+          - { name: email_subject, label: E-Mail-Betreff, type: string, description: "Wird beim Klick auf den Button im E-Mail-Programm vorausgefüllt. Die Adresse wird unter Konfiguration festgelegt." }
+      - name: location
+        label: Anfahrt
+        type: object
+        fields:
+          - { name: heading, label: Titel, type: string }
+          - { name: address, label: Adresse, type: text }
+          - { name: maps_url, label: Karten-Link, type: string, description: "Optional. Leer lassen, um den Button auszublenden." }
+          - { name: maps_label, label: Beschriftung Karten-Button, type: string }
+      - name: sections
+        label: Weitere Abschnitte
+        type: object
+        list: true
+        fields:
+          - { name: heading, label: Titel, type: string }
+          - { name: text, label: Text, type: rich-text }
+          - { name: button_label, label: Button-Beschriftung, type: string, description: "Optional" }
+          - { name: button_url, label: Button-Link, type: string, description: "Optional" }
+
+  - name: fehlerseite
+    label: Fehlerseite (404)
+    path: 404.html
+    type: file
+    format: yaml-frontmatter
+    fields:
+      - { name: heading, label: Titel, type: string }
+      - { name: message, label: Nachricht, type: rich-text }
