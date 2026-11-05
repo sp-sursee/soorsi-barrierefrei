@@ -28,8 +28,18 @@ jobs:
     - id: pages
       uses: actions/configure-pages@v5
 
+    # The site origin (scheme + host) for absolute URLs (canonical, og:image,
+    # sitemap, JSON-LD); the path part is handled by --baseurl.
+    - name: Set site URL
+      run: |
+        set -euo pipefail
+        origin=$(printf '%s' "${{ steps.pages.outputs.base_url }}" | sed -E 's#^(https?://[^/]+).*#\1#')
+        [ -n "$origin" ] || { echo "configure-pages returned no base_url" >&2; exit 1; }
+        printf 'url: "%s"\n' "$origin" > _config.ci.yml
+        cat _config.ci.yml
+
     - name: Build
-      run: bundle exec jekyll build --baseurl "${{ steps.pages.outputs.base_path }}"
+      run: bundle exec jekyll build --config _config.yml,_config.ci.yml --baseurl "${{ steps.pages.outputs.base_path }}"
       env:
         JEKYLL_ENV: production
 
@@ -49,6 +59,10 @@ jobs:
           while IFS= read -r -d '' f; do
             mogrify -resize "${MAX_EDGE}x${MAX_EDGE}>" -strip "$f"
           done
+
+        # Downscaled copies for the hero srcset; created before jpegoptim/pngquant
+        # so they are optimised too.
+        script/images
 
         find _site -type f \( -iname '*.jpg' -o -iname '*.jpeg' \) -print0 |
           xargs -0 --no-run-if-empty \

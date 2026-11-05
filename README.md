@@ -7,7 +7,7 @@ One-page event website for "Soorsi Barrierefrei - Dini Idee bewegt!", built with
 All texts and images are edited in Pages CMS (schema in `.pages.yml`):
 
 - **Konfiguration** (`_data/site.yml`): site title, description, registration e-mail, optional banner
-- **Startseite** (`index.html` front matter): hero, intro, info boxes, registration, directions, extra sections
+- **Startseite** (`index.html` front matter): hero, structured event data for search engines (date, place), intro, info boxes, registration, directions, extra sections
 - **Fehlerseite** (`404.html` front matter)
 
 `index.html` and `404.html` intentionally contain only front matter; the markup lives in `_includes/page-*.html`. Layouts are assigned in `_config.yml`, not in front matter, so the CMS cannot remove them.
@@ -24,10 +24,10 @@ bundle exec jekyll serve
 ## Tests
 
 ```bash
-bundle exec jekyll build && script/test
+bundle exec jekyll build && script/images && script/test
 ```
 
-Runs html-proofer (internal links, images, alt texts) and checks that the event data from the CMS files reaches the rendered page.
+`script/images` writes the downscaled hero image copies used in the `srcset` (ImageMagick, or `sips` on macOS). `script/test` runs html-proofer (internal links, images, alt texts) and checks that the event data from the CMS files reaches the rendered page, plus the SEO output: canonical link, Open Graph image, schema.org Event JSON-LD, `robots.txt` and `sitemap.xml`.
 
 ## Deployment
 

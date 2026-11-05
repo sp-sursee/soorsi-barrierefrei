@@ -33,6 +33,17 @@ content:
           - { name: image, label: Titelbild, type: image }
           - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text, description: "Beschreibt das Bild für Menschen, die es nicht sehen können. Bitte immer ausfüllen." }
           - { name: image_position, label: Bildausrichtung, type: string, description: "Welcher Teil des Bildes sichtbar bleibt: top, center oder bottom" }
+      - name: event
+        label: Angaben für Suchmaschinen
+        description: Wird nicht angezeigt, sondern von Google und anderen Suchmaschinen gelesen. Bitte gleich halten wie Datum und Ort oben.
+        type: object
+        fields:
+          - { name: start, label: Beginn, type: date, options: { time: true } }
+          - { name: end, label: Ende, type: date, options: { time: true } }
+          - { name: place_name, label: Name des Orts, type: string, description: "z.B. Pfarreizentrum Sursee" }
+          - { name: street, label: Strasse und Nummer, type: string }
+          - { name: postal_code, label: PLZ, type: string }
+          - { name: locality, label: Ort, type: string }
       - name: intro
         label: Einleitung
         type: object

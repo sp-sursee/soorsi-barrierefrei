@@ -5,7 +5,8 @@
 
 @font-face {
     font-family: "Montserrat";
-    src: url("../fonts/montserrat-latin.woff") format("woff");
+    src: url("../fonts/montserrat-latin.woff2") format("woff2"),
+         url("../fonts/montserrat-latin.woff") format("woff");
     font-weight: 100 900;
     font-style: normal;
     font-display: swap;
@@ -13,7 +14,8 @@
 
 @font-face {
     font-family: "Montserrat";
-    src: url("../fonts/montserrat-Italic-latin.woff") format("woff");
+    src: url("../fonts/montserrat-Italic-latin.woff2") format("woff2"),
+         url("../fonts/montserrat-Italic-latin.woff") format("woff");
     font-weight: 100 900;
     font-style: italic;
     font-display: swap;
@@ -54,6 +56,11 @@ body {
     color: var(--brown);
     font-size: 1.125rem;
     line-height: 1.65;
+    /* long German compounds (e.g. "Gebärdensprachdolmetschung") must wrap at
+       narrow widths and with increased letter spacing (WCAG 1.4.10 / 1.4.12)
+       instead of overflowing; inherited by all text */
+    overflow-wrap: break-word;
+    hyphens: auto;
 }
 
 h1, h2, h3 {
@@ -74,6 +81,19 @@ a:hover { color: var(--brown); }
 img { max-width: 100%; display: block; }
 
 address { font-style: normal; margin-bottom: 1.5em; font-size: 1.25rem; }
+
+/* stand-alone e-mail links: never overflow narrow cards, and a 44px tap height.
+   The underline sits lower so it does not hide the "_" in the address. */
+a[href^="mailto:"]:not(.button) {
+    overflow-wrap: anywhere;
+    text-underline-offset: .4em;
+}
+
+.registration-address a,
+.site-footer a[href^="mailto:"] {
+    display: inline-block;
+    padding: .55rem 0;
+}
 
 :focus-visible {
     outline: 3px solid var(--focus);
@@ -153,6 +173,10 @@ main:focus { outline: none; }
 
 .banner-close {
     display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 44px;
+    min-height: 44px;
     padding: .4rem;
     border: 0;
     border-radius: 6px;
@@ -274,6 +298,10 @@ main:focus { outline: none; }
 @media (min-width: 1100px) { .detail-grid { grid-template-columns: repeat(4, 1fr); } }
 
 .detail-card {
+    /* grid items default to min-width: auto, so an unbreakable string (the
+       e-mail address) would widen the card past the viewport */
+    min-width: 0;
+    overflow-wrap: anywhere;
     background: var(--white);
     border-radius: var(--radius);
     padding: 1.75rem 1.5rem;
