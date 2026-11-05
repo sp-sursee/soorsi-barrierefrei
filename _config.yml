@@ -9,6 +9,15 @@ lang: de-CH
 #
 # baseurl is set by the GitHub Pages workflow (--baseurl), so all internal links
 # must go through the relative_url filter.
+#
+# url is the local default. The deploy workflow overrides it with the real
+# origin from actions/configure-pages via a generated _config.ci.yml, so
+# canonical links, og:image, sitemap and JSON-LD carry absolute production URLs.
+url: "http://localhost:4000"
+
+# Widths of the downscaled copies that script/images writes next to every image
+# in assets/images. The hero <img> srcset is built from the same list.
+responsive_widths: [800, 1200, 1600]
 
 exclude:
   - "fllyer_barrierefrei_v5 Ordner"
@@ -19,6 +28,7 @@ exclude:
   - vendor
   - .claude
   - script
+  - _config.ci.yml
 
 # Layouts are assigned here (not in each page's front matter) so the Pages CMS,
 # which only writes back the fields it knows about, can never strip a page's layout.
@@ -27,3 +37,12 @@ defaults:
       path: ""
     values:
       layout: default
+  # robots.txt and sitemap.xml are plain text/XML and must not be wrapped in HTML.
+  - scope:
+      path: "robots.txt"
+    values:
+      layout: null
+  - scope:
+      path: "sitemap.xml"
+    values:
+      layout: null

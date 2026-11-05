@@ -1,0 +1,50 @@
+{%- comment -%}
+  schema.org Event for search engines (Google event rich results).
+  Built from the structured "event" fields of index.html, because the visible
+  date and address are free text that cannot be parsed reliably. If event.start
+  is empty nothing is emitted; script/test fails in that case, so a missing
+  date is caught before deployment instead of silently dropping the markup.
+  Every value goes through jsonify for correct JSON escaping; "</" is escaped
+  afterwards so CMS text can never close the script element early.
+{%- endcomment -%}
+{%- assign event = page.event -%}
+{%- if event.start and event.start != "" -%}
+{%- capture json -%}
+{
+    "@context": "https://schema.org",
+    "@type": "Event",
+    "name": {{ page.hero.heading | default: site.data.site.title | jsonify }},
+    "description": {{ site.data.site.description | strip_html | jsonify }},
+    "url": {{ page.url | absolute_url | jsonify }},
+    "inLanguage": {{ site.lang | default: "de-CH" | jsonify }},
+    "startDate": {{ event.start | jsonify }},
+    {%- if event.end and event.end != "" %}
+    "endDate": {{ event.end | jsonify }},
+    {%- endif %}
+    "eventStatus": "https://schema.org/EventScheduled",
+    "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+    "isAccessibleForFree": true,
+    {%- if page.hero.image %}
+    "image": [{{ page.hero.image | absolute_url | jsonify }}],
+    {%- endif %}
+    "location": {
+        "@type": "Place",
+        "name": {{ event.place_name | jsonify }},
+        "address": {
+            "@type": "PostalAddress",
+            "streetAddress": {{ event.street | jsonify }},
+            "postalCode": {{ event.postal_code | jsonify }},
+            "addressLocality": {{ event.locality | jsonify }},
+            "addressCountry": "CH"
+        }
+    },
+    "organizer": {
+        "@type": "Organization",
+        "name": {{ site.data.site.title | jsonify }},
+        "email": {{ site.data.site.email | jsonify }},
+        "url": {{ "/" | absolute_url | jsonify }}
+    }
+}
+{%- endcapture %}
+<script type="application/ld+json">{{ json | replace: "</", "<\/" }}</script>
+{%- endif -%}

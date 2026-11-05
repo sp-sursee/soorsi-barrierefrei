@@ -1,0 +1,42 @@
+#!/usr/bin/env bash
+# Writes downscaled copies of every image in <site>/assets/images for the hero
+# srcset: foo.jpg -> foo-800w.jpg, foo-1200w.jpg, ... (widths from
+# responsive_widths in _config.yml). Images are never upscaled, so a source
+# narrower than a width yields a same-size copy and the srcset stays valid.
+# Runs on the built site (not the sources) so CMS uploads are covered too.
+# Uses ImageMagick when present (CI), else macOS sips (local).
+# Usage: script/images [site-dir]   (expects a prior `bundle exec jekyll build`)
+set -euo pipefail
+
+site="${1:-_site}"
+dir="$site/assets/images"
+[ -d "$dir" ] || { echo "no image directory: $dir" >&2; exit 1; }
+
+widths=$(ruby -ryaml -e 'puts YAML.load_file("_config.yml").fetch("responsive_widths").join(" ")')
+
+if command -v magick >/dev/null; then im=(magick)
+elif command -v convert >/dev/null; then im=(convert)
+elif command -v sips >/dev/null; then im=()
+else echo "need ImageMagick or sips" >&2; exit 1
+fi
+
+resize() { # src dst width
+    if [ ${#im[@]} -gt 0 ]; then
+        "${im[@]}" "$1" -resize "${3}x>" -strip "$2"
+    else
+        local current
+        current=$(sips -g pixelWidth "$1" | awk '/pixelWidth/ {print $2}')
+        if [ "$current" -gt "$3" ]; then sips --resampleWidth "$3" "$1" --out "$2" >/dev/null
+        else cp "$1" "$2"; fi
+    fi
+}
+
+find "$dir" -type f \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' \) ! -regex '.*-[0-9][0-9]*w\.[A-Za-z]*' -print0 |
+    while IFS= read -r -d '' src; do
+        ext="${src##*.}"
+        base="${src%.*}"
+        for w in $widths; do
+            resize "$src" "$base-${w}w.$ext" "$w"
+            echo "$base-${w}w.$ext"
+        done
+    done

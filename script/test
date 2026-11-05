@@ -10,7 +10,9 @@ index="$site/index.html"
 
 # BASE_PATH: the baseurl the site was built with (GitHub project pages), so
 # html-proofer can resolve /<repo>/... links against the site root.
-proofer_args=(--disable-external)
+# Local builds use url: http://localhost:4000 (_config.yml) for absolute URLs;
+# only those are exempt from the HTTPS check, CI builds use the real origin.
+proofer_args=(--disable-external --ignore-urls '/^http:\/\/localhost[:\/]/')
 if [ -n "${BASE_PATH:-}" ]; then proofer_args+=(--swap-urls "^${BASE_PATH}:"); fi
 bundle exec htmlproofer "$site" "${proofer_args[@]}"
 
@@ -29,5 +31,30 @@ expect "$date_line"
 
 h1_count=$(grep -o "<h1" "$index" | wc -l | tr -d ' ')
 if [ "$h1_count" != "1" ]; then echo "expected exactly one <h1>, found $h1_count"; fail=1; fi
+
+# SEO: metadata, structured data, crawl files
+expect 'rel="canonical" href="http'
+expect 'property="og:image" content="http'
+expect 'name="twitter:card"'
+if grep -qF 'name="robots" content="noindex"' "$site/404.html"; then echo "ok       404 noindex"; else echo "MISSING  404 noindex"; fail=1; fi
+
+ruby -rjson -e '
+  html = File.read(ARGV[0])
+  blocks = html.scan(%r{<script type="application/ld\+json">(.*?)</script>}m).flatten
+  abort "MISSING  JSON-LD Event" unless blocks.size == 1
+  event = JSON.parse(blocks.first)
+  abort "JSON-LD: expected @type Event, got #{event["@type"]}" unless event["@type"] == "Event"
+  %w[name startDate location].each { |k| abort "JSON-LD: missing #{k}" if event[k].to_s.empty? }
+  abort "JSON-LD: startDate not ISO 8601: #{event["startDate"]}" unless event["startDate"] =~ /\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/
+  puts "ok       JSON-LD Event #{event["startDate"]}"
+' "$index" || fail=1
+
+if grep -qE '^Sitemap: https?://' "$site/robots.txt"; then echo "ok       robots.txt sitemap"; else echo "MISSING  robots.txt sitemap"; fail=1; fi
+ruby -rrexml/document -e '
+  doc = REXML::Document.new(File.read(ARGV[0]))
+  locs = REXML::XPath.match(doc, "//*[local-name()=\"loc\"]").map(&:text)
+  abort "MISSING  sitemap <loc>" if locs.empty? || locs.any? { |l| l !~ %r{\Ahttps?://} }
+  puts "ok       sitemap.xml #{locs.join(" ")}"
+' "$site/sitemap.xml" || fail=1
 
 exit "$fail"
