@@ -30,10 +30,14 @@ jobs:
 
     # The site origin (scheme + host) for absolute URLs (canonical, og:image,
     # sitemap, JSON-LD); the path part is handled by --baseurl.
+    # configure-pages reports http:// whenever "Enforce HTTPS" is off in the
+    # Pages settings, although GitHub Pages serves every site over HTTPS. The
+    # scheme is therefore always written as https so canonical links never
+    # point to the insecure variant.
     - name: Set site URL
       run: |
         set -euo pipefail
-        origin=$(printf '%s' "${{ steps.pages.outputs.base_url }}" | sed -E 's#^(https?://[^/]+).*#\1#')
+        origin=$(printf '%s' "${{ steps.pages.outputs.base_url }}" | sed -E 's#^https?://([^/]+).*#https://\1#')
         [ -n "$origin" ] || { echo "configure-pages returned no base_url" >&2; exit 1; }
         printf 'url: "%s"\n' "$origin" > _config.ci.yml
         cat _config.ci.yml
