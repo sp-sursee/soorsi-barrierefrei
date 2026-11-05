@@ -3,7 +3,8 @@
     <div class="hero-text">
         <div class="wrap">
             <div class="hero-top">
-                <img class="hero-logo" src="{{ '/assets/logo.svg' | relative_url }}" alt="{{ site.data.site.title }}" width="248" height="90">
+                {%- comment -%} alt is empty because the h1 right below names the event; a text alternative would be announced twice. {%- endcomment -%}
+                <img class="hero-logo" src="{{ '/assets/logo.svg' | relative_url }}" alt="" width="248" height="90">
                 {% if hero.date_line %}<p class="hero-date">{{ hero.date_line }}</p>{% endif %}
             </div>
             <h1 class="hero-heading">
