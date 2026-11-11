@@ -1,0 +1,33 @@
+{%- comment -%}
+  "Weitere Abschnitte": free sections shared by the home page and the extra
+  pages. Param: sections (list). Each section gets an id from its heading, so
+  buttons and links can point to it (e.g. #programm).
+  image_position: oben (above the text) | links | rechts (side by side on wide screens)
+  background: hell (page colour) | farbig (peach) | weiss
+{%- endcomment -%}
+{%- for section in include.sections -%}
+{%- assign has_image = false -%}
+{%- if section.image and section.image != "" -%}{%- assign has_image = true -%}{%- endif -%}
+{%- assign side = false -%}
+{%- if has_image and section.image_position == "links" or has_image and section.image_position == "rechts" -%}{%- assign side = true -%}{%- endif -%}
+{%- assign section_id = section.heading | default: "" | slugify: "latin" %}
+<section class="block extra bg-{{ section.background | default: 'hell' }}{% if side %} extra-side extra-image-{{ section.image_position }}{% endif %}"{% if section_id != "" %} id="{{ section_id }}" aria-labelledby="{{ section_id }}-heading"{% endif %}>
+    <div class="wrap{% unless side %} narrow{% endunless %}">
+        {%- if side %}
+        <div class="extra-grid">
+            <div class="extra-media">{% include responsive-image.html src=section.image alt=section.image_alt class="extra-image" sizes="(min-width: 800px) 50vw, 100vw" attrs='loading="lazy" decoding="async"' %}</div>
+            <div class="extra-body">
+        {%- endif %}
+        {% if section.heading and section.heading != "" %}<h2{% if section_id != "" %} id="{{ section_id }}-heading"{% endif %}>{{ section.heading }}</h2>{% endif %}
+        {%- if has_image and side == false %}
+        <div class="extra-media">{% include responsive-image.html src=section.image alt=section.image_alt class="extra-image" sizes="(min-width: 800px) 760px, 100vw" attrs='loading="lazy" decoding="async"' %}</div>
+        {%- endif %}
+        {{ section.text | markdownify }}
+        {% if section.button_label and section.button_label != "" %}<p><a class="button" href="{% include url.html url=section.button_url %}">{{ section.button_label }}</a></p>{% endif %}
+        {%- if side %}
+            </div>
+        </div>
+        {%- endif %}
+    </div>
+</section>
+{%- endfor -%}

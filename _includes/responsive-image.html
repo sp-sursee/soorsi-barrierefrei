@@ -1,0 +1,19 @@
+{%- comment -%}
+  <img> with a srcset of the -<width>w copies that script/images writes after
+  the build. Only JPEG/PNG files in /assets/images get copies; anything else
+  (SVG, WebP, external URL) is rendered without srcset so no link breaks.
+  Params: src, alt, class, sizes (default 100vw), width, height, attrs (raw extra attributes).
+{%- endcomment -%}
+{%- assign img_src = include.src -%}
+{%- assign img_ext = img_src | split: "." | last -%}
+{%- assign img_ext_lc = img_ext | downcase -%}
+{%- assign img_srcset = "" -%}
+{%- assign img_prefix = img_src | slice: 0, 15 -%}
+{%- if img_prefix == "/assets/images/" -%}
+{%- if img_ext_lc == "jpg" or img_ext_lc == "jpeg" or img_ext_lc == "png" -%}
+{%- assign img_base_length = img_src.size | minus: img_ext.size | minus: 1 -%}
+{%- assign img_base = img_src | slice: 0, img_base_length -%}
+{%- capture img_srcset -%}{% for w in site.responsive_widths %}{{ img_base | append: "-" | append: w | append: "w." | append: img_ext | relative_url }} {{ w }}w, {% endfor %}{{ img_src | relative_url }} 2400w{%- endcapture -%}
+{%- endif -%}
+{%- endif -%}
+<img{% if include.class %} class="{{ include.class }}"{% endif %} src="{{ img_src | relative_url }}"{% if img_srcset != "" %} srcset="{{ img_srcset }}" sizes="{{ include.sizes | default: '100vw' }}"{% endif %} alt="{{ include.alt | escape }}"{% if include.width %} width="{{ include.width }}" height="{{ include.height }}"{% endif %}{% if include.attrs %} {{ include.attrs }}{% endif %}>

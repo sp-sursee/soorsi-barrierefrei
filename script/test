@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # End-to-end check of the built site: links/images/alt texts via html-proofer,
-# plus assertions that the CMS-managed event data reaches the rendered page.
+# plus assertions that the CMS-managed event data reaches the rendered page and
+# that the extra pages (_seiten/) show up in the menu and the sitemap.
 # Usage: [BASE_PATH=/repo] script/test [site-dir]   (expects a prior `bundle exec jekyll build`)
 set -euo pipefail
 export LANG="${LANG:-C.UTF-8}" LC_ALL="${LC_ALL:-C.UTF-8}"
@@ -48,6 +49,38 @@ ruby -rjson -e '
   abort "JSON-LD: startDate not ISO 8601: #{event["startDate"]}" unless event["startDate"] =~ /\A\d{4}-\d{2}-\d{2}T\d{2}:\d{2}/
   puts "ok       JSON-LD Event #{event["startDate"]}"
 ' "$index" || fail=1
+
+# Every built page: one <h1>, language, skip link; canonical unless noindex.
+while IFS= read -r -d '' page; do
+    rel="${page#"$site"/}"
+    n=$(grep -o "<h1" "$page" | wc -l | tr -d ' ')
+    [ "$n" = "1" ] || { echo "$rel: expected exactly one <h1>, found $n"; fail=1; }
+    grep -qF 'lang="de-CH"' "$page" || { echo "$rel: missing lang"; fail=1; }
+    grep -qF 'href="#inhalt"' "$page" || { echo "$rel: missing skip link"; fail=1; }
+    if ! grep -qF 'name="robots" content="noindex"' "$page" && ! grep -qF 'rel="canonical" href="http' "$page"; then
+        echo "$rel: neither canonical nor noindex"; fail=1
+    fi
+done < <(find "$site" -name '*.html' -print0)
+
+# Extra pages: drafts (published: false) must not be built; every built page
+# must be in the main menu of the home page, and in the sitemap unless noindex.
+# TEST_UNPUBLISHED=1 when the site was built with --unpublished.
+for src in _seiten/*.md; do
+    [ -e "$src" ] || continue
+    name=$(basename "$src" .md)
+    read -r published noindex < <(ruby -ryaml -rdate -e 'd = YAML.load_file(ARGV[0], permitted_classes: [Date, Time]) || {}; puts "#{d["published"] != false} #{d.dig("seo", "noindex") == true}"' "$src")
+    [ -n "$published" ] || { echo "cannot read front matter of $src"; fail=1; continue; }
+    if [ "$published" = "false" ] && [ -z "${TEST_UNPUBLISHED:-}" ]; then
+        if [ -e "$site/$name/index.html" ]; then echo "draft $name was published"; fail=1; else echo "ok       draft $name not published"; fi
+        continue
+    fi
+    [ -e "$site/$name/index.html" ] || { echo "MISSING  page $name"; fail=1; continue; }
+    if grep -qE "class=\"nav-list\"" "$index" && grep -qE "href=\"[^\"]*/$name/\"" "$index"; then echo "ok       menu $name"; else echo "MISSING  menu entry $name"; fail=1; fi
+    if grep -qE "aria-current=\"page\"" "$site/$name/index.html"; then echo "ok       aria-current $name"; else echo "MISSING  aria-current $name"; fail=1; fi
+    if [ "$noindex" = "false" ]; then
+        if grep -qE "<loc>[^<]*/$name/</loc>" "$site/sitemap.xml"; then echo "ok       sitemap $name"; else echo "MISSING  sitemap $name"; fail=1; fi
+    fi
+done
 
 if grep -qE '^Sitemap: https?://' "$site/robots.txt"; then echo "ok       robots.txt sitemap"; else echo "MISSING  robots.txt sitemap"; fail=1; fi
 ruby -rrexml/document -e '

@@ -187,6 +187,66 @@ main:focus { outline: none; }
 
 .banner-close:focus-visible { outline-color: var(--white); box-shadow: none; }
 
+.banner a { color: var(--white); font-weight: 700; }
+.banner a:hover { color: var(--peach); }
+.banner :focus-visible { outline-color: var(--white); box-shadow: none; }
+
+
+/* ---------- main menu ---------- */
+/* home page: slim bar above the hero, same colour as the top of the hero band */
+.nav-bar { background: var(--orange-dark); border-bottom: 1px solid rgba(255, 255, 255, .25); }
+.nav-bar .site-nav { display: flex; justify-content: flex-end; }
+
+.site-nav { color: var(--white); }
+.site-nav :focus-visible { outline-color: var(--white); box-shadow: none; }
+
+.nav-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0 .25rem;
+}
+
+.nav-list a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: .5rem .85rem;
+    color: var(--white);
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 3px solid transparent;
+}
+
+.nav-list a:hover { color: var(--white); border-bottom-color: rgba(255, 255, 255, .6); }
+.nav-list a[aria-current="page"] { border-bottom-color: var(--white); font-weight: 800; }
+
+.nav-toggle {
+    display: none;
+    align-items: center;
+    gap: .5rem;
+    min-height: 44px;
+    padding: .5rem .9rem;
+    border: 2px solid var(--white);
+    border-radius: 999px;
+    background: transparent;
+    color: var(--white);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* the toggle only exists with more than 3 entries, and only collapses once
+   the script has run (is-collapsible), so without JavaScript the list wraps */
+@media (max-width: 700px) {
+    .site-nav.is-collapsible { flex-direction: column; align-items: flex-end; padding: .5rem 0; }
+    .site-nav.is-collapsible .nav-toggle { display: inline-flex; }
+    .site-nav.is-collapsible:not(.is-open) .nav-list { display: none; }
+    .site-nav.is-collapsible .nav-list { flex-direction: column; align-items: stretch; width: 100%; padding-top: .5rem; }
+}
+
 
 /* ---------- hero ---------- */
 .hero { background: var(--orange); }
@@ -328,11 +388,39 @@ main:focus { outline: none; }
 
 .location { text-align: center; }
 
-.extra:nth-of-type(odd) { background: var(--peach); }
+.bg-farbig { background: var(--peach); }
+.bg-weiss { background: var(--white); }
+
+.extra-media { margin: 0 0 1.5rem; }
+.extra-image, .page-image img { width: 100%; height: auto; border-radius: var(--radius); }
+
+@media (min-width: 800px) {
+    .extra-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 3rem;
+        align-items: center;
+    }
+    .extra-grid .extra-media { margin: 0; }
+    .extra-image-rechts .extra-media { order: 2; }
+}
+
+.location-text { margin-bottom: 1.5em; }
+
+/* ---------- extra pages ---------- */
+.page-intro h1 { font-size: clamp(2rem, 5vw, 3.25rem); font-weight: 800; }
+.page-image { margin-top: 2rem; }
 
 
-/* ---------- 404 header ---------- */
+/* ---------- header of extra pages and 404 ---------- */
 .page-header { background: var(--orange-dark); padding: 1.5rem 0; }
+.page-header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem 2rem;
+}
 .header-logo { display: inline-block; }
 .header-logo img { width: 200px; height: auto; background: var(--white); padding: .6rem .9rem; border-radius: 10px; }
 
@@ -357,6 +445,10 @@ main:focus { outline: none; }
 
 .foot-logo { display: inline-block; }
 .foot-logo img { width: 200px; height: auto; background: var(--white); padding: .6rem .9rem; border-radius: 10px; }
+
+.foot-links ul { list-style: none; margin: 0; padding: 0; }
+.foot-links a { display: inline-block; padding: .55rem 0; }
+.foot-text p { margin-bottom: .4em; }
 
 .foot-heading { color: var(--white); font-size: 1.125rem; margin-bottom: .4em; }
 

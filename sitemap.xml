@@ -6,4 +6,10 @@
         <loc>{{ '/' | absolute_url }}</loc>
         <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
     </url>
+    {%- for doc in site.seiten %}{% unless doc.seo.noindex == true %}
+    <url>
+        <loc>{{ doc.url | absolute_url }}</loc>
+        <lastmod>{{ site.time | date_to_xmlschema }}</lastmod>
+    </url>
+    {%- endunless %}{% endfor %}
 </urlset>

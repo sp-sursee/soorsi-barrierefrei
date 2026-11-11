@@ -1,8 +1,9 @@
-{% if site.data.site.banner and site.data.site.banner != "" %}
+{%- assign s = site.data.site -%}
+{% if s.banner and s.banner != "" %}
 <div class="banner" id="banner" role="region" aria-label="Hinweis">
     <div class="wrap banner-inner">
-        <p>{{ site.data.site.banner }}</p>
-        <button type="button" class="banner-close" id="banner-close" aria-label="Hinweis schliessen">{% include icon.html name="schliessen" %}</button>
+        <p>{{ s.banner }}{% if s.banner_link_url and s.banner_link_url != "" %} <a href="{% include url.html url=s.banner_link_url %}">{{ s.banner_link_label | default: "Mehr erfahren" }}</a>{% endif %}</p>
+        <button type="button" class="banner-close" id="banner-close" aria-label="{{ s.texts.banner_close | default: 'Hinweis schliessen' }}">{% include icon.html name="schliessen" %}</button>
     </div>
 </div>
 <script>

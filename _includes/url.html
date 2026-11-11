@@ -1,0 +1,9 @@
+{%- comment -%}
+  Outputs a link target typed into the CMS. Site-internal paths ("/ueber-uns/")
+  get the baseurl prepended; anchors (#anmeldung), full URLs, mailto: and
+  tel: links are passed through unchanged. Use: {% include url.html url=x %}
+{%- endcomment -%}
+{%- assign u = include.url | default: "" | strip -%}
+{%- assign u_first = u | slice: 0 -%}
+{%- assign u_two = u | slice: 0, 2 -%}
+{%- if u_first == "/" and u_two != "//" -%}{{ u | relative_url }}{%- else -%}{{ u }}{%- endif -%}

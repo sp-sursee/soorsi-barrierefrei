@@ -19,6 +19,14 @@ url: "http://localhost:4000"
 # in assets/images. The hero <img> srcset is built from the same list.
 responsive_widths: [800, 1200, 1600]
 
+# Extra pages ("Weitere Seiten" in the CMS), one file per page in _seiten/.
+# Every published page appears in the main menu (_includes/nav.html);
+# published: false keeps a draft out of the build, the menu and the sitemap.
+collections:
+  seiten:
+    output: true
+    permalink: /:name/
+
 exclude:
   - "fllyer_barrierefrei_v5 Ordner"
   - "flyer_barrierefrei_v5 Ordner.zip"

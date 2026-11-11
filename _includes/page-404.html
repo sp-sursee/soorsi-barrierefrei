@@ -1,12 +1,8 @@
-<header class="page-header">
-    <div class="wrap">
-        <a href="{{ '/' | relative_url }}" class="header-logo"><img src="{{ '/assets/logo.svg' | relative_url }}" alt="{{ site.data.site.title }}, zur Startseite" width="248" height="90"></a>
-    </div>
-</header>
+{%- include page-header.html -%}
 <main id="inhalt" tabindex="-1" class="block">
     <div class="wrap narrow">
         <h1>{{ page.heading }}</h1>
         {{ page.message | markdownify }}
-        <p><a class="button" href="{{ '/' | relative_url }}">Zur Startseite</a></p>
+        <p><a class="button" href="{{ '/' | relative_url }}">{{ page.button_label | default: "Zur Startseite" }}</a></p>
     </div>
 </main>
