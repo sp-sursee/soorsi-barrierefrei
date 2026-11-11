@@ -1,0 +1,37 @@
+{%- comment -%}
+  Main menu: the home page plus every published page of the "seiten"
+  collection (drafts are not built, so they never show up), ordered by
+  menu_order. Nothing is rendered while there are no extra pages.
+  With more than 3 entries a "Menü" button collapses the list on small
+  screens; without JavaScript the list stays visible and simply wraps.
+{%- endcomment -%}
+{%- assign nav_pages = site.seiten | sort: "menu_order", "last" -%}
+{%- if nav_pages.size > 0 -%}
+{%- assign texts = site.data.site.texts -%}
+{%- assign nav_count = nav_pages.size | plus: 1 -%}
+<nav class="site-nav{% if nav_count > 3 %} has-toggle{% endif %}" aria-label="Hauptmenü">
+    {%- if nav_count > 3 %}
+    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-list">{% include icon.html name="menu" %}{{ texts.menu_button | default: "Menü" }}</button>
+    {%- endif %}
+    <ul class="nav-list" id="nav-list" role="list">
+        <li><a href="{{ '/' | relative_url }}"{% if page.url == "/" %} aria-current="page"{% endif %}>{{ texts.nav_home | default: "Startseite" }}</a></li>
+        {%- for item in nav_pages %}
+        <li><a href="{{ item.url | relative_url }}"{% if page.url == item.url %} aria-current="page"{% endif %}>{{ item.menu_label | default: item.title }}</a></li>
+        {%- endfor %}
+    </ul>
+</nav>
+{%- if nav_count > 3 %}
+<script>
+    (function () {
+        var nav = document.currentScript.previousElementSibling;
+        var button = nav.querySelector(".nav-toggle");
+        nav.classList.add("is-collapsible");
+        button.addEventListener("click", function () {
+            var open = button.getAttribute("aria-expanded") !== "true";
+            button.setAttribute("aria-expanded", open);
+            nav.classList.toggle("is-open", open);
+        });
+    })();
+</script>
+{%- endif -%}
+{%- endif -%}

@@ -1,10 +1,24 @@
+{%- comment -%} Texts come from _data/footer.yml ("Fusszeile" in the CMS). {%- endcomment -%}
+{%- assign footer = site.data.footer -%}
+{%- assign logo = site.data.site.logo | default: "/assets/logo.svg" -%}
 <footer class="site-footer">
     <div class="wrap foot-grid">
-        <a href="{{ '/' | relative_url }}" class="foot-logo"><img src="{{ '/assets/logo.svg' | relative_url }}" alt="{{ site.data.site.title }}, zur Startseite" width="248" height="90" loading="lazy"></a>
-        <div>
-            <h2 class="foot-heading">Kontakt</h2>
-            <p><a href="mailto:{{ site.data.site.email }}">{{ site.data.site.email }}</a></p>
+        <a href="{{ '/' | relative_url }}" class="foot-logo"><img src="{{ logo | relative_url }}" alt="{{ site.data.site.title }}, zur Startseite" width="248" height="90" loading="lazy"></a>
+        <div class="foot-contact">
+            <h2 class="foot-heading">{{ footer.contact_heading | default: "Kontakt" }}</h2>
+            {% if footer.text and footer.text != "" %}<div class="foot-text">{{ footer.text | markdownify }}</div>{% endif %}
+            {% unless footer.show_email == false %}<p><a href="mailto:{{ site.data.site.email }}">{{ site.data.site.email }}</a></p>{% endunless %}
         </div>
+        {%- if footer.links.size > 0 %}
+        <div class="foot-links">
+            {% if footer.links_heading and footer.links_heading != "" %}<h2 class="foot-heading">{{ footer.links_heading }}</h2>{% endif %}
+            <ul role="list">
+                {%- for link in footer.links %}
+                <li><a href="{% include url.html url=link.url %}">{{ link.label }}</a></li>
+                {%- endfor %}
+            </ul>
+        </div>
+        {%- endif %}
     </div>
-    <div class="wrap foot-bottom">© {{ site.time | date: "%Y" }} {{ site.data.site.title }}</div>
+    <div class="wrap foot-bottom">© {{ site.time | date: "%Y" }} {{ footer.copyright | default: site.data.site.title }}</div>
 </footer>

@@ -8,22 +8,24 @@
   afterwards so CMS text can never close the script element early.
 {%- endcomment -%}
 {%- assign event = page.event -%}
+{%- comment -%} status: one of the schema.org EventStatusType values offered in the CMS select. {%- endcomment -%}
+{%- assign status = event.status | default: "EventScheduled" -%}
 {%- if event.start and event.start != "" -%}
 {%- capture json -%}
 {
     "@context": "https://schema.org",
     "@type": "Event",
     "name": {{ page.hero.heading | default: site.data.site.title | jsonify }},
-    "description": {{ site.data.site.description | strip_html | jsonify }},
+    "description": {{ page.seo.description | default: site.data.site.description | strip_html | jsonify }},
     "url": {{ page.url | absolute_url | jsonify }},
     "inLanguage": {{ site.lang | default: "de-CH" | jsonify }},
     "startDate": {{ event.start | jsonify }},
     {%- if event.end and event.end != "" %}
     "endDate": {{ event.end | jsonify }},
     {%- endif %}
-    "eventStatus": "https://schema.org/EventScheduled",
+    "eventStatus": {{ "https://schema.org/" | append: status | jsonify }},
     "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
-    "isAccessibleForFree": true,
+    "isAccessibleForFree": {% if event.free == false %}false{% else %}true{% endif %},
     {%- if page.hero.image %}
     "image": [{{ page.hero.image | absolute_url | jsonify }}],
     {%- endif %}
@@ -40,7 +42,7 @@
     },
     "organizer": {
         "@type": "Organization",
-        "name": {{ site.data.site.title | jsonify }},
+        "name": {{ event.organizer | default: site.data.site.title | jsonify }},
         "email": {{ site.data.site.email | jsonify }},
         "url": {{ "/" | absolute_url | jsonify }}
     }

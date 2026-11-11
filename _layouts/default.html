@@ -2,7 +2,7 @@
 <html lang="{{ site.lang | default: "de-CH" }}">
     {%- include head.html -%}
     <body>
-        <a class="skip-link" href="#inhalt">Zum Inhalt springen</a>
+        <a class="skip-link" href="#inhalt">{{ site.data.site.texts.skip_link | default: "Zum Inhalt springen" }}</a>
         {%- include banner.html -%}
 
         {%- comment -%}
@@ -12,6 +12,7 @@
         {%- endcomment -%}
         {% if page.url == "/" %}{%- include page-home.html -%}
         {% elsif page.url == "/404.html" %}{%- include page-404.html -%}
+        {% elsif page.collection == "seiten" %}{%- include page-seite.html -%}
         {% else %}<main id="inhalt" tabindex="-1">{{ content }}</main>{% endif %}
 
         {%- include footer.html -%}

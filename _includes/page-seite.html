@@ -1,0 +1,14 @@
+{%- comment -%} Extra pages (collection "seiten", files in _seiten/), e.g. "Über uns". {%- endcomment -%}
+{%- include page-header.html -%}
+<main id="inhalt" tabindex="-1">
+    <section class="block page-intro" aria-labelledby="page-heading">
+        <div class="wrap narrow">
+            <h1 id="page-heading">{{ page.title }}</h1>
+            {% if page.intro and page.intro != "" %}<div class="intro-text">{{ page.intro | markdownify }}</div>{% endif %}
+            {%- if page.image and page.image != "" %}
+            <div class="page-image">{% include responsive-image.html src=page.image alt=page.image_alt sizes="(min-width: 800px) 760px, 100vw" attrs='decoding="async"' %}</div>
+            {%- endif %}
+        </div>
+    </section>
+    {%- include sections.html sections=page.sections -%}
+</main>

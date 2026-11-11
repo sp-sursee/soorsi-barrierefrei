@@ -1,0 +1,7 @@
+{%- assign logo = site.data.site.logo | default: "/assets/logo.svg" -%}
+<header class="page-header">
+    <div class="wrap page-header-inner">
+        <a href="{{ '/' | relative_url }}" class="header-logo"><img src="{{ logo | relative_url }}" alt="{{ site.data.site.title }}, zur Startseite" width="248" height="90"></a>
+        {%- include nav.html -%}
+    </div>
+</header>

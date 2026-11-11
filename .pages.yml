@@ -5,17 +5,53 @@ media:
 content:
   - name: config
     label: Konfiguration
+    description: Allgemeine Angaben für die ganze Website, inklusive Google-Einstellungen.
     path: _data/site.yml
     type: file
     format: yaml
     fields:
       - { name: title, label: Website-Titel, type: string }
-      - { name: description, label: Website-Beschreibung, type: text, description: "Wird von Suchmaschinen und beim Teilen von Links angezeigt." }
+      - { name: description, label: Beschreibung für Google, type: text, description: "Wird in den Google-Suchergebnissen und beim Teilen von Links angezeigt. Ideal 120 bis 160 Zeichen. Einzelne Seiten können unter «Google & Teilen» eine eigene Beschreibung haben." }
       - { name: email, label: E-Mail für Anmeldungen, type: string }
+      - { name: logo, label: Logo, type: image, description: "Erscheint oben auf der Startseite, in der Kopfzeile der weiteren Seiten und in der Fusszeile." }
+      - { name: share_image, label: Standardbild beim Teilen, type: image, description: "Wird verwendet, wenn eine Seite kein eigenes Bild hat." }
+      - { name: share_image_alt, label: Bildbeschreibung Standardbild, type: text }
+      - { name: google_site_verification, label: Google Search Console Bestätigungscode, type: string, description: "Optional. In der Google Search Console die Methode «HTML-Tag» wählen und nur den Code aus content=\"…\" hier einfügen." }
       - name: banner
         label: Banner-Hinweis
         type: string
         description: Hinweistext für das Banner oben auf der Website (z.B. Anmeldeschluss oder Programmänderung). Leer lassen, um das Banner auszublenden.
+      - { name: banner_link_url, label: Banner-Link, type: string, description: "Optional, z.B. /#anmeldung oder https://…" }
+      - { name: banner_link_label, label: Banner-Link-Beschriftung, type: string, description: "z.B. Mehr erfahren" }
+      - name: texts
+        label: Texte der Bedienelemente
+        type: object
+        fields:
+          - { name: nav_home, label: Menüpunkt Startseite, type: string }
+          - { name: menu_button, label: Menü-Button (Handy), type: string }
+          - { name: skip_link, label: Link «Zum Inhalt springen», type: string, description: "Nur für Tastatur- und Screenreader-Nutzende sichtbar." }
+          - { name: banner_close, label: Banner schliessen (für Screenreader), type: string }
+
+  - name: footer
+    label: Fusszeile
+    description: Der dunkle Bereich ganz unten auf jeder Seite.
+    path: _data/footer.yml
+    type: file
+    format: yaml
+    fields:
+      - { name: contact_heading, label: Titel Kontakt, type: string }
+      - { name: text, label: Text, type: rich-text, description: "Optional, z.B. Adresse oder Trägerschaft." }
+      - { name: show_email, label: E-Mail-Adresse anzeigen, type: boolean, default: true, description: "Die Adresse wird unter Konfiguration festgelegt." }
+      - { name: links_heading, label: Titel Links, type: string, description: "Optional" }
+      - name: links
+        label: Links
+        type: object
+        list: true
+        description: z.B. Impressum, Datenschutz, Instagram
+        fields:
+          - { name: label, label: Beschriftung, type: string }
+          - { name: url, label: Link, type: string, description: "z.B. /impressum/ oder https://…" }
+      - { name: copyright, label: Copyright-Text, type: string, description: "Erscheint nach «© Jahr»." }
 
   - name: home
     label: Startseite
@@ -32,7 +68,16 @@ content:
           - { name: tagline, label: Slogan, type: string }
           - { name: image, label: Titelbild, type: image }
           - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text, description: "Beschreibt das Bild für Menschen, die es nicht sehen können. Bitte immer ausfüllen." }
-          - { name: image_position, label: Bildausrichtung, type: string, description: "Welcher Teil des Bildes sichtbar bleibt: top, center oder bottom" }
+          - name: image_position
+            label: Bildausrichtung
+            type: select
+            default: bottom
+            description: Welcher Teil des Bildes sichtbar bleibt
+            options:
+              values:
+                - { value: top, label: Oben }
+                - { value: center, label: Mitte }
+                - { value: bottom, label: Unten }
       - name: event
         label: Angaben für Suchmaschinen
         description: Wird nicht angezeigt, sondern von Google und anderen Suchmaschinen gelesen. Bitte gleich halten wie Datum und Ort oben.
@@ -44,12 +89,34 @@ content:
           - { name: street, label: Strasse und Nummer, type: string }
           - { name: postal_code, label: PLZ, type: string }
           - { name: locality, label: Ort, type: string }
+          - { name: organizer, label: Veranstalter, type: string }
+          - { name: free, label: Kostenlos, type: boolean, default: true }
+          - name: status
+            label: Status
+            type: select
+            default: EventScheduled
+            options:
+              values:
+                - { value: EventScheduled, label: Findet statt }
+                - { value: EventRescheduled, label: Verschoben (neues Datum oben eintragen) }
+                - { value: EventPostponed, label: Verschoben (Datum noch offen) }
+                - { value: EventCancelled, label: Abgesagt }
+      - name: seo
+        label: Google & Teilen
+        type: object
+        fields:
+          - { name: title, label: Titel bei Google, type: string, description: "Optional. Wird im Browser-Tab und als Titel in den Google-Suchergebnissen angezeigt. Leer lassen für den Standardtitel." }
+          - { name: description, label: Beschreibung bei Google, type: text, description: "Optional, ideal 120 bis 160 Zeichen. Leer lassen, um die Website-Beschreibung (Konfiguration) zu verwenden." }
+          - { name: image, label: Bild beim Teilen, type: image, description: "Optional. Erscheint, wenn der Link z.B. per WhatsApp geteilt wird. Leer lassen für das Seiten- oder Standardbild." }
+          - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text }
       - name: intro
         label: Einleitung
         type: object
         fields:
+          - { name: show, label: Abschnitt anzeigen, type: boolean, default: true }
           - { name: heading, label: Titel, type: string }
           - { name: text, label: Text, type: rich-text }
+      - { name: details_show, label: Infoboxen anzeigen, type: boolean, default: true }
       - { name: details_heading, label: Titel Infoboxen, type: string }
       - name: details
         label: Infoboxen
@@ -66,34 +133,111 @@ content:
                 - { value: ort, label: Ort }
                 - { value: essen, label: Essen }
                 - { value: mail, label: E-Mail }
+                - { value: telefon, label: Telefon }
                 - { value: info, label: Information }
+                - { value: rollstuhl, label: Rollstuhl }
+                - { value: ohr, label: Hören }
+                - { value: auge, label: Sehen }
+                - { value: zug, label: Öffentlicher Verkehr }
+                - { value: parkplatz, label: Parkplatz }
+                - { value: gruppe, label: Gruppe }
           - { name: title, label: Titel, type: string }
           - { name: text, label: Text, type: rich-text }
       - name: registration
         label: Anmeldung
         type: object
         fields:
+          - { name: show, label: Abschnitt anzeigen, type: boolean, default: true }
           - { name: heading, label: Titel, type: string }
           - { name: text, label: Text, type: rich-text }
           - { name: button_label, label: Button-Beschriftung, type: string }
           - { name: email_subject, label: E-Mail-Betreff, type: string, description: "Wird beim Klick auf den Button im E-Mail-Programm vorausgefüllt. Die Adresse wird unter Konfiguration festgelegt." }
+          - { name: url, label: Anmelde-Link statt E-Mail, type: string, description: "Optional, z.B. ein Online-Formular (https://…). Wenn ausgefüllt, führt der Button dorthin statt ins E-Mail-Programm." }
+          - { name: show_address, label: E-Mail-Adresse unter dem Button anzeigen, type: boolean, default: true }
+          - { name: address_label, label: Beschriftung vor der E-Mail-Adresse, type: string }
       - name: location
         label: Anfahrt
         type: object
         fields:
+          - { name: show, label: Abschnitt anzeigen, type: boolean, default: true }
           - { name: heading, label: Titel, type: string }
           - { name: address, label: Adresse, type: text }
+          - { name: text, label: Zusätzliche Infos, type: rich-text, description: "Optional, z.B. Anreise mit ÖV, Rollstuhlzugang, Parkplätze." }
           - { name: maps_url, label: Karten-Link, type: string, description: "Optional. Leer lassen, um den Button auszublenden." }
           - { name: maps_label, label: Beschriftung Karten-Button, type: string }
+      - name: sections_position
+        label: Position der weiteren Abschnitte
+        type: select
+        default: ende
+        options:
+          values:
+            - { value: nach_einleitung, label: Nach der Einleitung }
+            - { value: vor_anmeldung, label: Vor der Anmeldung }
+            - { value: ende, label: Am Ende der Seite }
       - name: sections
         label: Weitere Abschnitte
+        description: Beliebig viele zusätzliche Abschnitte mit Titel, Text, optionalem Bild und Button. Reihenfolge per Ziehen ändern.
         type: object
         list: true
-        fields:
+        # &section_fields: reused for the sections of the extra pages below
+        fields: &section_fields
           - { name: heading, label: Titel, type: string }
           - { name: text, label: Text, type: rich-text }
-          - { name: button_label, label: Button-Beschriftung, type: string, description: "Optional" }
-          - { name: button_url, label: Button-Link, type: string, description: "Optional" }
+          - { name: image, label: Bild, type: image, description: "Optional" }
+          - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text, description: "Beschreibt das Bild für Menschen, die es nicht sehen können. Pflicht, wenn ein Bild gewählt ist." }
+          - name: image_position
+            label: Bildposition
+            type: select
+            default: oben
+            options:
+              values:
+                - { value: oben, label: Über dem Text }
+                - { value: links, label: Links neben dem Text }
+                - { value: rechts, label: Rechts neben dem Text }
+          - name: background
+            label: Hintergrund
+            type: select
+            default: hell
+            options:
+              values:
+                - { value: hell, label: Hell }
+                - { value: farbig, label: Farbig (Pfirsich) }
+                - { value: weiss, label: Weiss }
+          - { name: button_label, label: Button-Beschriftung, type: string, description: "Optional. Leer lassen, um keinen Button anzuzeigen." }
+          - { name: button_url, label: Button-Link, type: string, description: "z.B. /ueber-uns/ (eigene Seite), /#anmeldung (Abschnitt der Startseite) oder https://… (externe Seite)" }
+
+  - name: seiten
+    label: Weitere Seiten
+    description: Zusätzliche Seiten, z.B. «Über uns». Jede veröffentlichte Seite erscheint automatisch im Menü oben. Mit «Neu» eine Seite erstellen; die Adresse der Seite wird aus dem Titel gebildet.
+    type: collection
+    path: _seiten
+    format: yaml-frontmatter
+    filename: "{primary}.md"
+    view:
+      primary: title
+      fields: [title, menu_order, published]
+    fields:
+      - { name: title, label: Titel, type: string, required: true, description: "Überschrift der Seite und Name im Menü." }
+      - { name: published, label: Veröffentlicht, type: boolean, default: true, description: "Ausgeschaltet bleibt die Seite ein Entwurf: nicht auf der Website und nicht im Menü." }
+      - { name: menu_order, label: Position im Menü, type: number, default: 10, description: "Kleinere Zahl = weiter vorne. Die Startseite ist immer zuerst." }
+      - { name: menu_label, label: Name im Menü, type: string, description: "Optional, falls der Menüpunkt kürzer sein soll als der Titel." }
+      - { name: intro, label: Einleitung, type: rich-text }
+      - { name: image, label: Bild, type: image, description: "Optional, unter der Einleitung." }
+      - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text, description: "Pflicht, wenn ein Bild gewählt ist." }
+      - name: sections
+        label: Abschnitte
+        type: object
+        list: true
+        fields: *section_fields
+      - name: seo
+        label: Google & Teilen
+        type: object
+        fields:
+          - { name: title, label: Titel bei Google, type: string, description: "Optional. Leer lassen für «Seitentitel | Website-Titel»." }
+          - { name: description, label: Beschreibung bei Google, type: text, description: "Optional, ideal 120 bis 160 Zeichen. Leer lassen, um den Anfang der Einleitung zu verwenden." }
+          - { name: image, label: Bild beim Teilen, type: image, description: "Optional" }
+          - { name: image_alt, label: Bildbeschreibung (Alternativtext), type: text }
+          - { name: noindex, label: Nicht bei Google anzeigen, type: boolean, default: false, description: "Die Seite bleibt erreichbar und im Menü, erscheint aber nicht in den Suchergebnissen." }
 
   - name: fehlerseite
     label: Fehlerseite (404)
@@ -103,3 +247,4 @@ content:
     fields:
       - { name: heading, label: Titel, type: string }
       - { name: message, label: Nachricht, type: rich-text }
+      - { name: button_label, label: Button-Beschriftung, type: string }
